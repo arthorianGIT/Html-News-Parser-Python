@@ -2,13 +2,13 @@ import requests
 from bs4 import BeautifulSoup
 import lxml
 
-index = 1
 url = 'https://news.ycombinator.com/'
 page = 1
+index = 0
 
 def news_parser():
-    global index
     global url
+    global index
     global page
     while True:
         params = {
@@ -24,9 +24,12 @@ def news_parser():
             for span in soup.find_all('span', class_='titleline'):
                 hyperlink_text = span.find('a').text
                 hyperlink_link = span.find('a').get('href')
+                for rank in soup.find_all('span', class_='rank'):
+                    index = rank.text
+                    del rank['class']
+                    break
                 print('-' * 10)
-                print(f'{index} - {hyperlink_text} -> {hyperlink_link}')
-                index += 1
+                print(f'{index} {hyperlink_text} -> {hyperlink_link}')
             print('-' * 10)
             choice = input('Go to the next or previous page or quit? (next, previous, quit): ')
 
@@ -35,10 +38,16 @@ def news_parser():
                 continue
             elif choice.lower().strip() == 'previous':
                 page -= 1
+                if page <= 0:
+                    page = 1
+                    print('Cannot be lower than 0')
                 continue
             elif choice.lower().strip() == 'quit':
                 print('Goodbye!')
                 break
+            else:
+                print('Choose something one from given')
+                continue
         else:
             print(f'Error: {response.status_code}')
 
