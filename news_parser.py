@@ -10,10 +10,10 @@ def news_parser():
     global index
     global url
     global page
-    params = {
-        'p': page
-    }
     while True:
+        params = {
+        'p': page
+        }
         try:
             response = requests.get(url, params=params)
         except requests.exceptions.ConnectionError:
